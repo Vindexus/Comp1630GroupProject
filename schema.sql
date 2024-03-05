@@ -3,7 +3,7 @@ CREATE DATABASE comp_1630_project;
 USE comp_1630_project;
 BEGIN;
 CREATE TABLE user (
-    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     user_fname VARCHAR(255),
     user_lname VARCHAR(255),
     user_email VARCHAR(255),
@@ -17,50 +17,50 @@ CREATE TABLE user (
 );
 
 CREATE TABLE genre (
-    genre_id INT PRIMARY KEY AUTO_INCREMENT,
+    genre_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     genre_name VARCHAR(255) UNIQUE NOT NULL
 );
 
 CREATE TABLE media (
-    media_id INT PRIMARY KEY AUTO_INCREMENT,
+    media_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     release_date DATETIME,
     added_date DATETIME NOT NULL DEFAULT NOW(),
-    added_by_user_id INT,
+    added_by_user_id INT UNSIGNED,
     media_type ENUM('book', 'movie', 'magazine') NOT NULL,
     FOREIGN KEY (added_by_user_id) REFERENCES user(user_id)
 );
 
 CREATE TABLE book (
-    book_id INT PRIMARY KEY AUTO_INCREMENT,
-    media_id INT NOT NULL UNIQUE,
+    book_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    media_id INT UNSIGNED NOT NULL UNIQUE,
     FOREIGN KEY (media_id) REFERENCES media(media_id)
 );
 
 CREATE TABLE movie (
-    movie_id INT PRIMARY KEY AUTO_INCREMENT,
-    media_id INT NOT NULL UNIQUE,
+    movie_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    media_id INT UNSIGNED NOT NULL UNIQUE,
     runtime_minutes SMALLINT UNSIGNED,
     FOREIGN KEY (media_id) REFERENCES media(media_id)
 );
 
 CREATE TABLE magazine (
-    magazine_id INT PRIMARY KEY AUTO_INCREMENT,
-    media_id INT NOT NULL UNIQUE,
-    issue_num MEDIUMINT,
+    magazine_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    media_id INT UNSIGNED NOT NULL UNIQUE,
+    issue_num MEDIUMINT UNSIGNED,
     FOREIGN KEY (media_id) REFERENCES media(media_id)
 );
 
 CREATE TABLE author (
-    author_id INT PRIMARY KEY AUTO_INCREMENT,
+    author_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     author_fname VARCHAR(255),
     author_lname VARCHAR(255)
 );
 
 CREATE TABLE media_genre (
-    genre_id INT,
-    media_id INT,
-    sort_order INT NOT NULL DEFAULT 1,
+    genre_id INT UNSIGNED,
+    media_id INT UNSIGNED,
+    sort_order INT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (genre_id, media_id),
     FOREIGN KEY (genre_id) REFERENCES genre(genre_id),
     FOREIGN KEY (media_id) REFERENCES media(media_id),
@@ -68,9 +68,9 @@ CREATE TABLE media_genre (
 );
 
 CREATE TABLE authorship (
-    author_id INT,
-    book_id INT,
-    sort_order INT,
+    author_id INT UNSIGNED,
+    book_id INT UNSIGNED,
+    sort_order INT UNSIGNED,
     PRIMARY KEY (author_id, book_id),
     FOREIGN KEY (author_id) REFERENCES AUTHOR(author_id),
     FOREIGN KEY (book_id) REFERENCES BOOK(book_id),
@@ -78,33 +78,33 @@ CREATE TABLE authorship (
 );
 
 CREATE TABLE fine_reason (
-    reason_id INT PRIMARY KEY AUTO_INCREMENT,
+    reason_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     reason_str VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE building (
-    building_num INT PRIMARY KEY AUTO_INCREMENT,
+    building_num INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     building_label VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE location (
-    location_id INT PRIMARY KEY AUTO_INCREMENT,
-    building_num INT NOT NULL,
+    location_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    building_num INT UNSIGNED NOT NULL,
     loc_name VARCHAR(255),
-    loc_aisle_num INT,
-    loc_floor_num INT,
-    genre_id INT,
+    loc_aisle_num INT UNSIGNED,
+    loc_floor_num INT UNSIGNED,
+    genre_id INT UNSIGNED,
     FOREIGN KEY (genre_id) REFERENCES genre(genre_id),
     FOREIGN KEY (building_num) REFERENCES building(building_num)
 );
 
 CREATE TABLE copy (
-    copy_id INT PRIMARY KEY AUTO_INCREMENT,
-    media_id INT,
+    copy_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    media_id INT UNSIGNED,
     is_hardcover BOOLEAN,
     is_large_print BOOLEAN,
-    location_id INT,
-    added_by_user_id INT,
+    location_id INT UNSIGNED,
+    added_by_user_id INT UNSIGNED,
     added_date DATETIME,
     FOREIGN KEY (media_id) REFERENCES media(media_id),
     FOREIGN KEY (location_id) REFERENCES location(location_id),
@@ -112,25 +112,25 @@ CREATE TABLE copy (
 );
 
 CREATE TABLE copy_status (
-    status_id INT PRIMARY KEY AUTO_INCREMENT,
-    copy_id INT NOT NULL,
+    status_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    copy_id INT UNSIGNED NOT NULL,
     status_date DATETIME NOT NULL DEFAULT NOW(),
     is_damaged BOOLEAN NOT NULL DEFAULT FALSE,
     is_lost BOOLEAN NOT NULL DEFAULT FALSE,
     is_reserved BOOLEAN NOT NULL DEFAULT FALSE,
     is_loaned BOOLEAN NOT NULL DEFAULT FALSE,
-    triggering_user_id INT,
+    triggering_user_id INT UNSIGNED,
     FOREIGN KEY (copy_id) REFERENCES copy(copy_id),
     FOREIGN KEY (triggering_user_id) REFERENCES USER(user_id)
 );
 
-ALTER TABLE copy ADD COLUMN status_id INT;
+ALTER TABLE copy ADD COLUMN status_id INT UNSIGNED;
 ALTER TABLE copy ADD FOREIGN KEY (status_id) REFERENCES copy_status(status_id);
 
 CREATE TABLE loan (
-    loan_id INT PRIMARY KEY AUTO_INCREMENT,
-    copy_id INT NOT NULL,
-    user_id INT NOT NULL,
+    loan_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    copy_id INT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED NOT NULL,
     checkout_date DATETIME NOT NULL DEFAULT NOW(),
     return_date DATETIME,
     due_date DATETIME,
@@ -140,9 +140,9 @@ CREATE TABLE loan (
 );
 
 CREATE TABLE reservation (
-    reservation_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    media_id INT NOT NULL,
+    reservation_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    user_id INT UNSIGNED NOT NULL,
+    media_id INT UNSIGNED NOT NULL,
     reservation_start DATE NOT NULL,
     reservation_end DATE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id),
@@ -150,19 +150,19 @@ CREATE TABLE reservation (
 );
 
 CREATE TABLE fine (
-    fine_id INT PRIMARY KEY AUTO_INCREMENT,
-    loan_id INT NOT NULL,
+    fine_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    loan_id INT UNSIGNED NOT NULL,
     fine_date DATETIME NOT NULL DEFAULT NOW(),
     fine_amount DECIMAL(10,2) NOT NULL,
-    reason_id INT NOT NULL,
+    reason_id INT UNSIGNED NOT NULL,
     is_paid BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (loan_id) REFERENCES loan(loan_id),
     FOREIGN KEY (reason_id) REFERENCES fine_reason(reason_id)
 );
 
 CREATE TABLE payment (
-    payment_id INT PRIMARY KEY AUTO_INCREMENT,
-    fine_id INT NOT NULL,
+    payment_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    fine_id INT UNSIGNED NOT NULL,
     pay_date DATETIME NOT NULL DEFAULT NOW(),
     pay_amount DECIMAL(10,2) NOT NULL,
     pay_method VARCHAR(255) NOT NULL,
