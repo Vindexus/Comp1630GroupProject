@@ -51,10 +51,10 @@ CREATE TABLE magazine (
     FOREIGN KEY (media_id) REFERENCES media(media_id)
 );
 
-CREATE TABLE author (
-    author_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    author_fname VARCHAR(255),
-    author_lname VARCHAR(255)
+CREATE TABLE creator (
+    creator_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    creator_fname VARCHAR(255),
+    creator_lname VARCHAR(255)
 );
 
 CREATE TABLE media_genre (
@@ -67,14 +67,14 @@ CREATE TABLE media_genre (
     CONSTRAINT UNIQUE(genre_id, media_id)
 );
 
-CREATE TABLE authorship (
-    author_id INT UNSIGNED,
-    book_id INT UNSIGNED,
+CREATE TABLE media_creators (
+    creator_id INT UNSIGNED,
+    media_id INT UNSIGNED,
     sort_order INT UNSIGNED,
-    PRIMARY KEY (author_id, book_id),
-    FOREIGN KEY (author_id) REFERENCES AUTHOR(author_id),
-    FOREIGN KEY (book_id) REFERENCES BOOK(book_id),
-    CONSTRAINT UNIQUE(author_id, book_id)
+    PRIMARY KEY (creator_id, media_id),
+    FOREIGN KEY (creator_id) REFERENCES creator(creator_id),
+    FOREIGN KEY (media_id) REFERENCES media(media_id),
+    CONSTRAINT UNIQUE(creator_id, media_id)
 );
 
 CREATE TABLE fine_reason (
@@ -121,7 +121,7 @@ CREATE TABLE copy_status (
     is_loaned BOOLEAN NOT NULL DEFAULT FALSE,
     triggering_user_id INT UNSIGNED,
     FOREIGN KEY (copy_id) REFERENCES copy(copy_id),
-    FOREIGN KEY (triggering_user_id) REFERENCES USER(user_id)
+    FOREIGN KEY (triggering_user_id) REFERENCES user(user_id)
 );
 
 ALTER TABLE copy ADD COLUMN status_id INT UNSIGNED;
