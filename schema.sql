@@ -4,6 +4,7 @@ USE comp_1630_project;
 BEGIN;
 CREATE TABLE user (
     user_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    user_password VARCHAR(255),
     user_fname VARCHAR(255),
     user_lname VARCHAR(255),
     user_email VARCHAR(255),
@@ -134,6 +135,7 @@ CREATE TABLE loan (
     checkout_date DATETIME NOT NULL DEFAULT NOW(),
     return_date DATETIME,
     due_date DATETIME,
+    new_field
     renewed_date DATETIME,
     FOREIGN KEY loan_fk_copy_id (copy_id) REFERENCES copy(copy_id),
     FOREIGN KEY loan_fk_user_id (user_id) REFERENCES user(user_id)
