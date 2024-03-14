@@ -1,3 +1,4 @@
+
 -- Inserting users
 INSERT INTO user (user_fname, user_lname, user_email, user_phone_no, is_librarian, is_staff, is_faculty, is_public, user_valid)
 VALUES 
@@ -107,9 +108,12 @@ INSERT INTO copy (media_id, is_hardcover, is_large_print, location_id, added_by_
 (10, TRUE, FALSE, 1, 6, NOW()),
 (11, FALSE, FALSE, 2, 7, NOW()),
 (12, FALSE, FALSE, 3, 7, NOW()),
-(13, TRUE, FALSE, 1, 8, NOW()),
-(14, FALSE, FALSE, 2, 9, NOW()),
-(15, FALSE, FALSE, 3, 10, NOW());
+(1, TRUE, FALSE, 1, 8, NOW()),
+(1, FALSE, FALSE, 2, 9, NOW()),
+(1, FALSE, FALSE, 2, 9, NOW()),
+(1, FALSE, FALSE, 2, 9, NOW()),
+(1, FALSE, FALSE, 2, 9, NOW()),
+(1, FALSE, FALSE, 3, 10, NOW());
 
 -- Inserting copy status
 INSERT INTO copy_status (copy_id, is_reserved, is_loaned) VALUES 
@@ -138,7 +142,9 @@ INSERT INTO loan (copy_id, user_id, checkout_date, return_date, due_date) VALUES
 (9, 6, NOW(), NULL, DATE_ADD(NOW(), INTERVAL 14 DAY)),
 (11, 7, NOW(), NULL, DATE_ADD(NOW(), INTERVAL 14 DAY)),
 (13, 8, NOW(), NULL, DATE_ADD(NOW(), INTERVAL 14 DAY)),
-(15, 9, NOW(), NULL, DATE_ADD(NOW(), INTERVAL 14 DAY));
+(15, 9, NOW(), NULL, DATE_ADD(NOW(), INTERVAL 14 DAY)),
+(16, 9, NOW(), NULL, DATE_ADD(NOW(), INTERVAL 14 DAY)),
+(17, 9, NOW(), NULL, DATE_ADD(NOW(), INTERVAL 14 DAY));
 
 -- Inserting reservations
 INSERT INTO reservation (user_id, media_id, reservation_start, reservation_end) VALUES 
