@@ -58,3 +58,23 @@ BEGIN
     JOIN genre ON location.genre_id = genre.genre_id
     WHERE genre.genre_name = genreName;
 END;
+
+-- Increase the amount of each fine by 0.25 cents every day
+CREATE EVENT calculate_fine_event
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_TIMESTAMP
+DO
+BEGIN
+    UPDATE fine
+    SET fine_amount = (fine_amount + (0.25 * (DATEDIFF(NOW(), fine_date))))
+    WHERE is_paid = FALSE;
+END;
+
+-- Generate list of email adresses for users whose loans will expire in 24hrs
+CREATE PROCEDURE loans_expiring_in_24hs()
+
+BEGIN
+    SELECT l.user_id, u.user_email, l.loan_id
+    FROM loan l JOIN user u ON l.user_id = u.user_id
+    WHERE DATEDIFF(due_date, now()) <= 1;
+END;
