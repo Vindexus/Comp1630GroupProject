@@ -152,17 +152,17 @@ INSERT INTO loan (copy_id, user_id, checkout_date, return_date, due_date) VALUES
 (17, 9, NOW(), NULL, DATE_ADD(NOW(), INTERVAL 14 DAY));
 
 -- Inserting reservations
-INSERT INTO reservation (user_id, media_id, reservation_start, reservation_end) VALUES 
-(1, 4, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
-(2, 5, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
-(3, 6, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
-(4, 7, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
-(5, 8, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
-(6, 9, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
-(7, 10, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
-(8, 11, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
-(9, 12, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
-(10, 13, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY));
+INSERT INTO reservation (user_id, copy_id, created_date, reservation_start, reservation_end, is_active) VALUES 
+(1, 4, (DATE_SUB(NOW(), INTERVAL 4 DAY), NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), TRUE),
+(2, 5, NOW(), (DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 4 DAY), TRUE),
+(3, 6, NOW(), (DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 4 DAY), TRUE),
+(4, 7, NOW(), (DATE_ADD(NOW(), INTERVAL 2 DAY), NULL, FALSE),
+(5, 8, NOW(), (DATE_ADD(NOW(), INTERVAL 2 DAY), NULL, FALSE),
+(6, 9, NOW(), (DATE_ADD(NOW(), INTERVAL 2 DAY), NULL, FALSE),
+(7, 10, NOW(), (DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 4 DAY), TRUE),
+(8, 11, NOW(), (DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 4 DAY), TRUE),
+(9, 12, NOW(), (DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 4 DAY), TRUE),
+(10, 13, NOW(), (DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 4 DAY), TRUE);
 
 -- Inserting fine reasons
 INSERT INTO fine_reason (reason_str) VALUES 
