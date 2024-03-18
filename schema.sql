@@ -144,8 +144,9 @@ CREATE TABLE reservation (
     reservation_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     user_id INT UNSIGNED NOT NULL,
     media_id INT UNSIGNED NOT NULL,
-    reservation_start DATE NOT NULL,
-    reservation_end DATE NOT NULL,
+    created_date DATETIME NOT NULL DEFAULT NOW(),
+    reservation_start DATETIME,
+    reservation_end DATETIME,
     FOREIGN KEY (user_id) REFERENCES user(user_id),
     FOREIGN KEY (media_id) REFERENCES media(media_id)
 );
