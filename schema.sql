@@ -148,7 +148,7 @@ CREATE TABLE reservation (
     reservation_start DATETIME,
     reservation_end DATETIME,
     FOREIGN KEY (user_id) REFERENCES user(user_id),
-    FOREIGN KEY (media_id) REFERENCES media(media_id)
+    FOREIGN KEY (copy_id) REFERENCES copy(copy_id)
 );
 
 CREATE TABLE fine (
