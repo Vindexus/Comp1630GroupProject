@@ -133,6 +133,11 @@ INSERT INTO copy_status (copy_id, is_reserved, is_loaned) VALUES
 (14, FALSE, FALSE),
 (15, FALSE, FALSE);
 
+UPDATE copy SET status_id = copy_id WHERE copy_id <= 15;
+INSERT INTO copy_status (copy_id, is_reserved, is_loaned, is_damaged)
+VALUES (15, FALSE, FALSE, TRUE);
+UPDATE copy SET status_id = 16 WHERE copy_id = 15;
+
 -- Inserting loans
 INSERT INTO loan (copy_id, user_id, checkout_date, return_date, due_date) VALUES 
 (1, 2, NOW(), NULL, DATE_ADD(NOW(), INTERVAL 14 DAY)),
