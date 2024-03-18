@@ -143,10 +143,11 @@ CREATE TABLE loan (
 CREATE TABLE reservation (
     reservation_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     user_id INT UNSIGNED NOT NULL,
-    media_id INT UNSIGNED NOT NULL,
+    copy_id INT UNSIGNED NOT NULL,
     created_date DATETIME NOT NULL DEFAULT NOW(),
     reservation_start DATETIME,
     reservation_end DATETIME,
+    is_active BOOL,
     FOREIGN KEY (user_id) REFERENCES user(user_id),
     FOREIGN KEY (media_id) REFERENCES media(media_id)
 );
