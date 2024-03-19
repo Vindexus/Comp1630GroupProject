@@ -94,7 +94,6 @@ END //
 -- List of users with fines exceeding $10
 CREATE PROCEDURE users_in_debt()
 BEGIN
-<<<<<<< patch-5
     SELECT u.user_id, sum(fine_amount) AS outstanding_fine
     FROM fine f
     JOIN user u ON f.user_id = u.user_id
@@ -118,7 +117,7 @@ BEGIN
     AND NOT EXISTS (
         SELECT 1
         FROM reservation r2
-        WHERE r2.media_id = r.media_id
+        WHERE r2.copy_id = r.copy_id
         AND r2.is_active = FALSE
         AND r2.reservation_start < r.reservation_start
     );
