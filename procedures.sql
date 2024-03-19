@@ -1,3 +1,17 @@
+DROP PROCEDURE IF EXISTS GetNumNonLostCopiesOfMedia;
+DELIMITER //
+CREATE PROCEDURE GetNumNonLostCopiesOfMedia(IN $mediaId INT)
+BEGIN
+    SELECT COUNT(*) as num
+    FROM copy c
+    JOIN copy_status cs
+    ON cs.status_id = c.status_id
+    WHERE cs.is_lost = 0
+    AND c.media_id = $mediaId;
+END //
+DELIMITER ;
+CALL GetNumNonLostCopiesOfMedia(1);
+
 DROP PROCEDURE IF EXISTS GetMediaNextReservation;
 DELIMITER //
 CREATE PROCEDURE GetMediaNextReservation (IN $mediaId INT)
