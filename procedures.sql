@@ -105,6 +105,13 @@ END //
 -- Remove reservations that have been held for 48 hours without being picked up, as well as activate any new reservations
 CREATE PROCEDURE process_reservations()
 BEGIN
+    
+    -- Update is_reserved in copy_status
+    UPDATE copy_status cs
+    JOIN reservation r ON cs.copy_id = r.copy_id
+    SET cs.is_reserved = FALSE
+    WHERE r.is_active = TRUE AND DATEDIFF(r.reservation_end, NOW()) < 0;
+    
     -- Delete overdue reservations
     DELETE FROM reservation
     WHERE is_active = TRUE AND DATEDIFF(reservation_end, NOW()) < 0;
@@ -120,14 +127,22 @@ BEGIN
         WHERE r2.copy_id = r.copy_id
         AND r2.is_active = FALSE
         AND r2.created_date < r.created_date
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM copy_status cs
+        WHERE cs.copy_id = r.copy_id
+        AND cs.is_loaned = TRUE OR cs.is_lost = TRUE
     );
 
     -- Update reservations based on the temporary table
     UPDATE reservation r1
     JOIN tmp_reservations tmp ON r1.reservation_id = tmp.reservation_id
+    JOIN copy_status cs ON cs.copy_id = r1.copy_id
     SET r1.is_active = TRUE,
         r1.reservation_start = NOW(),
-        r1.reservation_end = DATE_ADD(NOW(), INTERVAL 2 DAY);
+        r1.reservation_end = DATE_ADD(NOW(), INTERVAL 2 DAY),
+        cs.is_reserved = TRUE;
 
     -- Drop the temporary table
     DROP TEMPORARY TABLE IF EXISTS tmp_reservations;
@@ -141,3 +156,27 @@ DO
 BEGIN
     CALL process_reservations();
 END //
+
+-- Check for is_lost status prior to making a reservation; proceed if not
+CREATE PROCEDURE MakeReservation(
+IN p_user_id INT,
+IN p_copy_id INT,
+)
+BEGIN
+    DECLARE v_lost_flag INT;
+
+    -- Get the is_lost flag for the copy_id
+    SELECT is_lost INTO lost_flag
+    FROM copy_status
+    WHERE copy_id = NEW.copy_id;
+
+    -- Check if the item is lost, if so, raise an error
+    IF lost_flag = TRUE THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Cannot make a reservation for a lost item';
+    ELSE
+        INSERT INTO reservation (user_id, copy_id, created_date)
+        VALUES (p_user_id, p_copy_id, NOW());
+    END IF;
+END;
+//
