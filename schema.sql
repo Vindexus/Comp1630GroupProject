@@ -149,7 +149,7 @@ CREATE TABLE reservation (
     reservation_end DATETIME,
     is_active BOOL,
     FOREIGN KEY (user_id) REFERENCES user(user_id),
-    FOREIGN KEY (media_id) REFERENCES media(media_id)
+    FOREIGN KEY (copy_id) REFERENCES copy(copy_id)
 );
 
 CREATE TABLE fine (
