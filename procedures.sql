@@ -1,3 +1,20 @@
+DROP PROCEDURE IF EXISTS GetMediaNextReservation;
+DELIMITER //
+CREATE PROCEDURE GetMediaNextReservation (IN $mediaId INT)
+BEGIN
+    SELECT reservation_id, user_fname, user_lname, user_email, media.title, media.media_id
+    FROM media, reservation, user
+    WHERE media.media_id = $mediaId
+    AND reservation.media_id = media.media_id
+    AND reservation.reservation_end IS NOT NULL
+    AND reservation.reservation_end > NOW()
+    AND reservation.reservation_start IS NOT NULL
+    ORDER BY reservation.created_date ASC
+    LIMIT 1;
+END //
+DELIMITER ;
+    
+
 -- Active loans for a user
 
 BEGIN
