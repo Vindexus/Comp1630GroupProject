@@ -107,7 +107,7 @@ CREATE PROCEDURE process_reservations()
 BEGIN
     -- Delete overdue reservations
     DELETE FROM reservation
-    WHERE is_active = TRUE AND DATEDIFF(reservation_end, NOW()) < 0;
+    WHERE is_active = TRUE AND DATEDIFF(reservation_end, NOW()) < -2;
 
     -- Update reservations
     CREATE TEMPORARY TABLE tmp_reservations
