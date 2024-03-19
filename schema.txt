@@ -28,7 +28,7 @@ copy_status(status_id(pk), copy_id, status_date, is_damaged, is_lost, is_reserve
 
 loan(loan_id(pk), copy_id, user_id, checkout_date, return_date, due_date, renewed_date);
 
-reservation(reservation_id(pk), user_id, media_id, reservation_start, reservation_end);
+reservation(reservation_id(pk), user_id, copy_id, created_date, reservation_start, reservation_end, is_active);
 
 fine(fine_id(pk), loan_id, fine_date, fine_amount, reason_id, is_paid);
 
