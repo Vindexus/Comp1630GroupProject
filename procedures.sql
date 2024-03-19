@@ -1,5 +1,6 @@
+USE comp_1630_project;
 -- How many active loans are there?
-SELECT COUNT(*) FROM loans WHERE return_date IS NULL;
+SELECT COUNT(*) FROM loan WHERE return_date IS NULL;
 
 -- Dynamically set the due date of a loan based on the user's types
 DROP TRIGGER IF EXISTS LoanDueDate;
@@ -76,18 +77,22 @@ BEGIN
     FROM (
     SELECT u.user_id, active_loans < CASE WHEN is_student OR is_faculty THEN $studentFacultyMaxLoans ELSE $defaultMaxLoans END AS under_loan_limit, COALESCE(fine_total, 0) AS 'total_unnpaid_fines', COALESCE(fine_total, 0) < $maxFines AS under_fine_limit
     FROM user u
-    JOIN (SELECT COUNT(*) as active_loans, user_id
-    FROM loan
-    WHERE user_id = $userId
-    AND return_date IS NULL
-    GROUP BY user_id) al
+    JOIN (
+        SELECT COUNT(*) as active_loans, user_id
+        FROM loan
+        WHERE user_id = $userId
+        AND return_date IS NULL
+        GROUP BY user_id
+        ) al
     ON al.user_id = u.user_id
-    LEFT JOIN (SELECT SUM(fine_amount) as fine_total, user_id
-    FROM fine f, loan l
-    WHERE user_id = $userId
-    AND l.loan_id = f.loan_id
-    AND f.is_paid = FALSE
-    GROUP BY user_id) ft
+    LEFT JOIN (
+        SELECT SUM(fine_amount) as fine_total, user_id
+        FROM fine f, loan l
+        WHERE user_id = $userId
+        AND l.loan_id = f.loan_id
+        AND f.is_paid = FALSE
+        GROUP BY user_id
+    ) ft
     ON ft.user_id = u.user_id
     WHERE u.user_id = $userId) limits
     JOIN user u
@@ -127,17 +132,21 @@ DELIMITER ;
     
 
 -- Active loans for a user
-
+DROP PROCEDURE IF EXISTS GetUserActiveLoansCount;
+DELIMITER //
+CREATE PROCEDURE GetUserActiveLoansCount (IN $userId INT)
 BEGIN
     SELECT COUNT(*) AS active_loans_count
     FROM loan
-    WHERE user_id = userId;
+    WHERE user_id = $userId
+    AND return_date IS NULL;
 END //
 DELIMITER ;
 
 -- How many reservations exist for some media?
-
-CREATE PROCEDURE GetReservationsForBook (
+DROP PROCEDURE IF EXISTS GetReservationsForMedia;
+DELIMITER //
+CREATE PROCEDURE GetReservationsForMedia (
     IN mediaTitle VARCHAR(255)
 )
 BEGIN
@@ -145,10 +154,12 @@ BEGIN
     FROM reservation
     JOIN media ON reservation.media_id = media.media_id
     WHERE media.title = mediaTitle;
-END;
+END//
+DELIMITER ;
 
 -- Media created by author
-
+DROP PROCEDURE IF EXISTS GetMediaByCreator;
+DELIMITER //
 CREATE PROCEDURE GetMediaByCreator (
     IN creatorFirstName VARCHAR(255),
     IN creatorLastName VARCHAR(255)
@@ -160,10 +171,12 @@ BEGIN
     JOIN creator ON media_creators.creator_id = creator.creator_id
     WHERE creator.creator_fname = creatorFirstName
     AND creator.creator_lname = creatorLastName;
-END;
+END//
+DELIMITER ;
 
 -- Fines per USER
-
+DROP PROCEDURE IF EXISTS GetOutstandingFinesForUser;
+DELIMITER //
 CREATE PROCEDURE GetOutstandingFinesForUser (
     IN userId INT
 )
@@ -173,10 +186,12 @@ BEGIN
     JOIN loan l ON f.loan_id = l.loan_id
     WHERE l.user_id = userId
     AND f.is_paid = 0;
-END;
+END//
+DELIMITER ;
 
 -- Location of genre
-
+DROP PROCEDURE IF EXISTS GetLibraryLocationForGenre;
+DELIMITER //
 CREATE PROCEDURE GetLibraryLocationForGenre (
     IN genreName VARCHAR(255)
 )
@@ -185,9 +200,12 @@ BEGIN
     FROM location
     JOIN genre ON location.genre_id = genre.genre_id
     WHERE genre.genre_name = genreName;
-END;
+END//
+DELIMITER ;
 
 -- Increase the amount of each fine by 0.25 cents every day
+DROP EVENT IF EXISTS calculate_fine_event;
+DELIMITER //
 CREATE EVENT calculate_fine_event
 ON SCHEDULE EVERY 1 DAY
 STARTS CURRENT_TIMESTAMP
@@ -196,18 +214,23 @@ BEGIN
     UPDATE fine
     SET fine_amount = (fine_amount + (0.25 * (DATEDIFF(NOW(), fine_date))))
     WHERE is_paid = FALSE;
-END;
+END//
+DELIMITER ;
 
 -- Generate list of email adresses for users whose loans will expire in 24hrs
+DROP PROCEDURE IF EXISTS loans_expiring_in_24hs;
+DELIMITER //
 CREATE PROCEDURE loans_expiring_in_24hs()
-
 BEGIN
     SELECT l.user_id, u.user_email, l.loan_id
     FROM loan l JOIN user u ON l.user_id = u.user_id
     WHERE DATEDIFF(due_date, now()) <= 1;
-END;
+END//
+DELIMITER ;
 
 -- Expired loans but not returned
+DROP PROCEDURE IF EXISTS expired_unreturned_loans;
+DELIMITER //
 CREATE PROCEDURE expired_unreturned_loans()
 BEGIN
     SELECT m.title, cs.copy_id, l.loan_id, u.user_id, u.user_email
@@ -218,8 +241,11 @@ BEGIN
     JOIN media m ON m.media_id = cp.media_id
     WHERE is_loaned = 1 AND DATEDIFF(NOW(), l.due_date) > 0;
 END //
+DELIMITER ;
 
 -- List of users with fines exceeding $10
+DROP PROCEDURE IF EXISTS users_in_debt;
+DELIMITER //
 CREATE PROCEDURE users_in_debt()
 BEGIN
     SELECT u.user_id, sum(fine_amount) AS outstanding_fine
@@ -229,8 +255,11 @@ BEGIN
     GROUP BY u.user_id
     HAVING outstanding_fine > 10;
 END //
+DELIMITER ;
 
 -- Remove reservations that have been held for 48 hours without being picked up, as well as activate any new reservations
+DROP PROCEDURE IF EXISTS process_reservations;
+DELIMITER //
 CREATE PROCEDURE process_reservations()
 BEGIN
     
@@ -275,26 +304,32 @@ BEGIN
     -- Drop the temporary table
     DROP TEMPORARY TABLE IF EXISTS tmp_reservations;
 END //
+DELIMITER ;
 
 -- Run reservation process every day
+DROP EVENT IF EXISTS process_reservations_event;
+DELIMITER //
 CREATE EVENT process_reservations_event
 ON SCHEDULE EVERY 1 DAY
 STARTS CURRENT_TIMESTAMP
 DO
 BEGIN
     CALL process_reservations();
-END //
+END//
+DELIMITER ;
 
 -- Check for is_lost status prior to making a reservation; proceed if not
+DROP PROCEDURE IF EXISTS MakeReservation;
+DELIMITER //
 CREATE PROCEDURE MakeReservation(
 IN p_user_id INT,
-IN p_copy_id INT,
+IN p_copy_id INT
 )
 BEGIN
     DECLARE v_lost_flag INT;
 
     -- Get the is_lost flag for the copy_id
-    SELECT is_lost INTO lost_flag
+    SELECT is_lost INTO v_lost_flag
     FROM copy_status
     WHERE copy_id = NEW.copy_id;
 
@@ -306,5 +341,5 @@ BEGIN
         INSERT INTO reservation (user_id, copy_id, created_date)
         VALUES (p_user_id, p_copy_id, NOW());
     END IF;
-END;
-//
+END//
+DELIMITER ;
