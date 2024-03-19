@@ -10,7 +10,6 @@ BEGIN
     AND c.media_id = $mediaId;
 END //
 DELIMITER ;
-CALL GetNumNonLostCopiesOfMedia(1);
 
 DROP PROCEDURE IF EXISTS GetMediaNextReservation;
 DELIMITER //
