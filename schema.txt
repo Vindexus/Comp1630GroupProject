@@ -26,7 +26,7 @@ copy(copy_id(pk), media_id, is_hardcover, is_large_print, location_id, added_by_
 
 copy_status(status_id(pk), copy_id, status_date, is_damaged, is_lost, is_reserved, is_loaned, triggering_user_id);
 
-loan(loan_id(pk), copy_id, user_id, checkout_date, return_date, due_date, renewed_date);
+loan(loan_id(pk), copy_id, user_id, checkout_date, return_date, due_date, is_renewed, renewed_date);
 
 reservation(reservation_id(pk), user_id, copy_id, created_date, reservation_start, reservation_end, is_active);
 
