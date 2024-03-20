@@ -1,4 +1,4 @@
-user(user_id(pk), user_fname, user_lname, user_email, user_password, user_phone_no, user_join_date, is_librarian, is_staff, is_faculty, is_public, user_valid);
+user(user_id(pk), user_fname, user_lname, user_email, user_password, user_phone_no, user_join_date, is_student, is_librarian, is_staff, is_faculty, is_public, user_valid);
 
 genre(genre_id(pk), genre_name);
 
@@ -6,9 +6,9 @@ media(media_id(pk), title, release_date, added_date, added_by_user_id, media_typ
 
 book(book_id(pk), media_id);
 
-movie(movie_id(pk), media_id);
+movie(movie_id(pk), media_id, runtime_minutes);
 
-magazine(magazine_id(pk), media_id);
+magazine(magazine_id(pk), media_id, issue_num);
 
 creator(creator_id(pk), creator_fname, creator_lname);
 
@@ -22,7 +22,7 @@ building(building_num(pk), building_label);
 
 location(location_id(pk), building_num, loc_name, loc_aisle_num, loc_floor_num, genre_id);
 
-copy(copy_id(pk), media_id, is_hardcover, is_large_print, location_id, added_by_user_id, added_date);
+copy(copy_id(pk), media_id, is_hardcover, is_large_print, location_id, added_by_user_id, added_date, status_id);
 
 copy_status(status_id(pk), copy_id, status_date, is_damaged, is_lost, is_reserved, is_loaned, triggering_user_id);
 
