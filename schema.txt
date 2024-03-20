@@ -1,4 +1,4 @@
-user(user_id(pk), user_fname, user_lname, user_email, user_phone_no, user_join_date, is_librarian, is_staff, is_faculty, is_public, user_valid);
+user(user_id(pk), user_fname, user_lname, user_email, user_password, user_phone_no, user_join_date, is_librarian, is_staff, is_faculty, is_public, user_valid);
 
 genre(genre_id(pk), genre_name);
 
