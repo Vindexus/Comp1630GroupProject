@@ -343,3 +343,19 @@ BEGIN
     END IF;
 END//
 DELIMITER ;
+
+-- Find copy(ies) location based on the name of the error
+DELIMITER //
+
+CREATE PROCEDURE find_copy_locations(
+    IN mediaTitle VARCHAR(255)
+)
+BEGIN
+    SELECT l.building_num, l.loc_aisle_num, l.loc_floor_num
+    FROM copy c
+    JOIN location l ON c.location_id = l.location_id
+    JOIN media m ON c.media_id = m.media_id
+    WHERE m.title = mediaTitle;
+END //
+
+DELIMITER ;
