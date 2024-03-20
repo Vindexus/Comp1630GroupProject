@@ -10,6 +10,7 @@ CREATE TABLE user (
     user_email VARCHAR(255),
     user_phone_no VARCHAR(20),
     user_join_date DATETIME NOT NULL DEFAULT NOW(),
+    is_student BOOLEAN NOT NULL DEFAULT FALSE,
     is_librarian BOOLEAN NOT NULL DEFAULT FALSE,
     is_staff BOOLEAN NOT NULL DEFAULT FALSE,
     is_faculty BOOLEAN NOT NULL DEFAULT FALSE,
